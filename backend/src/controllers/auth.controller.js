@@ -1,160 +1,167 @@
-import jwt from "jsonwebtoken"
-import bcrypt from "bcryptjs"
-import {db} from "../libs/db.js"
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { db } from "../libs/db.js";
 import { UserRole } from "../generated/prisma/index.js";
 
-
+// REGISTER
 export const register = async (req, res) => {
-    const { email, password, name } = req.body;
+  const { email, password, name } = req.body;
 
-    try {
-        // Check if the user already exists
-        const existingUser = await db.user.findUnique({ where: { email } });
-
-        if (existingUser) {
-            return res.status(400).json({ error: 'User already exists' });
-        }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create the user in the database
-        const newUser = await db.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                name,
-                role: UserRole.USER, // Default role
-            },
-        });
-
-        // Generate a JWT token
-        const token = jwt.sign(
-            { id: newUser.id, email: newUser.email, role: newUser.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' } // 7 days
-        );
-
-        // Return success response
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: { id: newUser.id, email: newUser.email, name: newUser.name },
-            token,
-        });
-    } catch (error) {
-        console.error('Error during registration:', error);
-        res.status(500).json({ error: 'Registration failed' });
+  try {
+    const existingUser = await db.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await db.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        role: UserRole.USER,
+      },
+    });
+
+    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+      },
+    });
+  } catch (error) {
+    console.error("Registration Error:", error);
+    res.status(500).json({ error: "Registration failed" });
+  }
 };
 
+// LOGIN
 export const login = async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    try {
-        // Find the user by email
-        const user = await db.user.findUnique({ where: { email } });
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Compare the password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        // Generate a JWT token
-        const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        // Return success response
-        res.status(200).json({
-            message: 'Login successful',
-            user: { id: user.id, email: user.email, name: user.name },
-            token,
-        });
-    } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ error: 'Login failed' });
+  try {
+    const user = await db.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-};     
 
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
 
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "Login failed" });
+  }
+};
+
+// LOGOUT
 export const logout = async (req, res) => {
-    const authHeader = req.headers.authorization;
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV !== "development",
+    });
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(400).json({ error: 'Authorization header missing or invalid' });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    try {
-        // Decode the token to get its expiration time
-        const decodedToken = jwt.decode(token);
-        const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
-
-        // Add the token to the blacklist
-        await db.tokenBlacklist.create({
-            data: {
-                token,
-                expiresAt: new Date(expirationTime),
-            },
-        });
-
-        // Respond with success
-        res.status(200).json({
-            success: true,
-            message: 'Logout successful',
-        });
-    } catch (error) {
-        console.error('Error during logout:', error.message);
-        res.status(500).json({ error: 'Failed to log out' });
-    }
+    res.status(200).json({ success: true, message: "Logout successful" });
+  } catch (error) {
+    console.error("Logout Error:", error);
+    res.status(500).json({ error: "Failed to log out" });
+  }
 };
+
+// CHECK AUTH
+export const checkAuth = async (req, res) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "User authenticated successfully",
+      user: req.user,
+    });
+  } catch (error) {
+    console.error("Auth Check Error:", error);
+    res.status(500).json({ error: "Failed to check authentication" });
+  }
+};
+
+// GET SUBMISSIONS
 export const getSubmissions = async (req, res) => {
-    try {
-        const submissions = await db.submission.findMany({
-            where:{
-                userId: req.user.id
-            }
-        });
-        res.status(200).json({
-            success: true,
-            message: 'Submissions fetched successfully',
-            submissions,
-        });
-    } catch (error) {
-        console.error('Error fetching submissions:', error);
-        res.status(500).json({ error: 'Failed to fetch submissions' });
-    }
+  try {
+    const submissions = await db.submission.findMany({
+      where: {
+        userId: req.user.id,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Submissions fetched successfully",
+      submissions,
+    });
+  } catch (error) {
+    console.error("Fetch Submissions Error:", error);
+    res.status(500).json({ error: "Failed to fetch submissions" });
+  }
 };
 
-export const getUserPlaylists = async (req ,res)=>{
-    try {
-        const {userId} = req.user;
-        const playLists = await db.playlist.findMany({
-            where:{
-                userId
-            },
-            select:{
-                id:true,
-                name:true,
-                description:true,
-                createdAt:true,
-            }
-        })
+// GET USER PLAYLISTS
+export const getUserPlaylists = async (req, res) => {
+  try {
+    const playLists = await db.playlist.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        createdAt: true,
+      },
+    });
 
-        res.status(200).json({
-            success: true,
-            message: 'Playlists fetched successfully',
-            playLists,
-        });
-    } catch (error) {
-        console.error('Error fetching playLists:', error);
-        res.status(500).json({ error: 'Failed to fetch playLists' });
-    }
-}
+    res.status(200).json({
+      success: true,
+      message: "Playlists fetched successfully",
+      playLists,
+    });
+  } catch (error) {
+    console.error("Fetch Playlists Error:", error);
+    res.status(500).json({ error: "Failed to fetch playlists" });
+  }
+};

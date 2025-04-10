@@ -1,0 +1,624 @@
+{
+	"info": {
+		"_postman_id": "7fe81b0c-c91f-49ab-82d4-e4a93abcec56",
+		"name": "leetcode-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41301195"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"xsur234@gmail.com\",\r\n    \"password\":\"@1234567890Ss\",\r\n    \"name\":\"Suraj Kumar Jha\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"xsur234@gmail.com\",\r\n    \"password\":\"@1234567890Ss\"\r\n  \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-submissions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/get-submissions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"get-submissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-playlist",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "problem",
+			"item": [
+				{
+					"name": "create-problem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQyNTYyMTAsImV4cCI6MTc0NDg2MTAxMH0.nVqhEWBG72bv-Ly8ICPZLgISTA-6ZdI5OwMp4YwFQ8E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Check Even or Odd new \",\r\n  \"description\": \"Write a program that reads an integer from input and prints 'Even' if it is even, and 'Odd' if it is odd.\",\r\n  \"difficulty\": \"EASY\",\r\n  \"tags\": [\"math\", \"conditionals\"],\r\n  \"examples\": [\r\n    {\r\n      \"input\": \"4\",\r\n      \"output\": \"Even\",\r\n      \"explanation\": \"4 is divisible by 2, so the output is 'Even'.\"\r\n    },\r\n    {\r\n      \"input\": \"7\",\r\n      \"output\": \"Odd\",\r\n      \"explanation\": \"7 is not divisible by 2, so the output is 'Odd'.\"\r\n    }\r\n  ],\r\n  \"constraints\": \"-10^9 ≤ n ≤ 10^9\",\r\n  \"testCases\": [\r\n    { \"input\": \"4\", \"output\": \"Even\" },\r\n    { \"input\": \"7\", \"output\": \"Odd\" },\r\n    { \"input\": \"0\", \"output\": \"Even\" },\r\n    { \"input\": \"-3\", \"output\": \"Odd\" }\r\n  ],\r\n  \"codeSnippets\": {\r\n    \"PYTHON\": \"def check_even_odd(n):\\n    # Write your code here\\n    pass\",\r\n    \"JAVASCRIPT\": \"function checkEvenOdd(n) {\\n    // Write your code here\\n}\",\r\n    \"JAVA\": \"public class Main {\\n  public static String checkEvenOdd(int n) {\\n    // Write your code here\\n    return \\\"\\\";\\n  }\\n}\"\r\n  },\r\n  \"referenceSolutions\": {\r\n    \"PYTHON\": \"n = int(input())\\nprint('Even' if n % 2 == 0 else 'Odd')\",\r\n    \"JAVASCRIPT\": \"const readline = require('readline');\\nconst rl = readline.createInterface({ input: process.stdin, output: process.stdout });\\nrl.on('line', (line) => {\\n  const n = parseInt(line);\\n  console.log(n % 2 === 0 ? 'Even' : 'Odd');\\n  rl.close();\\n});\",\r\n    \"JAVA\": \"import java.util.*;\\npublic class Main {\\n  public static void main(String[] args) {\\n    Scanner sc = new Scanner(System.in);\\n    int n = sc.nextInt();\\n    System.out.println(n % 2 == 0 ? \\\"Even\\\" : \\\"Odd\\\");\\n  }\\n}\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/problems/create-problem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"problems",
+								"create-problem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all problem",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/problems/get-all-problems",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"problems",
+								"get-all-problems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get problem by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/problems/get-problem/f4817e00-5496-4c9b-b83e-9addc4f48390",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"problems",
+								"get-problem",
+								"f4817e00-5496-4c9b-b83e-9addc4f48390"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-problem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQyNTYyMTAsImV4cCI6MTc0NDg2MTAxMH0.nVqhEWBG72bv-Ly8ICPZLgISTA-6ZdI5OwMp4YwFQ8E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Perfect new problem \",\r\n  \"description\": \"Write a program that reads an integer from input and prints 'Even' if it is even, and 'Odd' if it is odd.\",\r\n  \"difficulty\": \"EASY\",\r\n  \"tags\": [\"math\", \"conditionals\"],\r\n  \"examples\": [\r\n    {\r\n      \"input\": \"4\",\r\n      \"output\": \"Even\",\r\n      \"explanation\": \"4 is divisible by 2, so the output is 'Even'.\"\r\n    },\r\n    {\r\n      \"input\": \"7\",\r\n      \"output\": \"Odd\",\r\n      \"explanation\": \"7 is not divisible by 2, so the output is 'Odd'.\"\r\n    }\r\n  ],\r\n  \"constraints\": \"-10^9 ≤ n ≤ 10^9\",\r\n  \"testCases\": [\r\n    { \"input\": \"4\", \"output\": \"Even\" },\r\n    { \"input\": \"7\", \"output\": \"Odd\" },\r\n    { \"input\": \"0\", \"output\": \"Even\" },\r\n    { \"input\": \"-3\", \"output\": \"Odd\" }\r\n  ],\r\n  \"codeSnippets\": {\r\n    \"PYTHON\": \"def check_even_odd(n):\\n    # Write your code here\\n    pass\",\r\n    \"JAVASCRIPT\": \"function checkEvenOdd(n) {\\n    // Write your code here\\n}\",\r\n    \"JAVA\": \"public class Main {\\n  public static String checkEvenOdd(int n) {\\n    // Write your code here\\n    return \\\"\\\";\\n  }\\n}\"\r\n  },\r\n  \"referenceSolutions\": {\r\n    \"PYTHON\": \"n = int(input())\\nprint('Even' if n % 2 == 0 else 'Odd')\",\r\n    \"JAVASCRIPT\": \"const readline = require('readline');\\nconst rl = readline.createInterface({ input: process.stdin, output: process.stdout });\\nrl.on('line', (line) => {\\n  const n = parseInt(line);\\n  console.log(n % 2 === 0 ? 'Even' : 'Odd');\\n  rl.close();\\n});\",\r\n    \"JAVA\": \"import java.util.*;\\npublic class Main {\\n  public static void main(String[] args) {\\n    Scanner sc = new Scanner(System.in);\\n    int n = sc.nextInt();\\n    System.out.println(n % 2 == 0 ? \\\"Even\\\" : \\\"Odd\\\");\\n  }\\n}\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/problems/update-problem/f4817e00-5496-4c9b-b83e-9addc4f48390",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"problems",
+								"update-problem",
+								"f4817e00-5496-4c9b-b83e-9addc4f48390"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Problem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQyNTYyMTAsImV4cCI6MTc0NDg2MTAxMH0.nVqhEWBG72bv-Ly8ICPZLgISTA-6ZdI5OwMp4YwFQ8E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/problems/delete-problem/f4817e00-5496-4c9b-b83e-9addc4f48390",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"problems",
+								"delete-problem",
+								"f4817e00-5496-4c9b-b83e-9addc4f48390"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "execute-code",
+			"item": [
+				{
+					"name": "execute-code",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQyNTYyMTAsImV4cCI6MTc0NDg2MTAxMH0.nVqhEWBG72bv-Ly8ICPZLgISTA-6ZdI5OwMp4YwFQ8E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"source_code\": \"n = int(input())\\nprint('Even' if n % 2 == 0 else 'Odd')\",\r\n  \"language_id\": 71, // Python\r\n  \"stdin\": \"4\", // Input for the program\r\n  \"problemId\": \"f98412e6-5669-4603-83ff-f861b7e33ff5\" // ID of the problem\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/execute-code",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"execute-code"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "playlist",
+			"item": [
+				{
+					"name": "All-PLaylist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create-Playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"150 Problems new\",\r\n    \"description\":\"Solve this 150 problems\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist/create-playlist",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist",
+								"create-playlist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-playlist-details-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist/ba62bcfb-caef-42df-8cbd-ac3f508a0279",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist",
+								"ba62bcfb-caef-42df-8cbd-ac3f508a0279"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-problem-into-playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"problemIds\":[\"f98412e6-5669-4603-83ff-f861b7e33ff5\" , \"3c65e45b-fbd1-46f4-8187-97efe89ecd5d\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist/ba62bcfb-caef-42df-8cbd-ac3f508a0279/add-problem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist",
+								"ba62bcfb-caef-42df-8cbd-ac3f508a0279",
+								"add-problem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete-playlist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist/dcd1ab57-1f11-4f47-9d75-ac4b4bd0df2e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist",
+								"dcd1ab57-1f11-4f47-9d75-ac4b4bd0df2e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhiNWVhY2UyLTQzMGMtNDA5Yi04MzgzLTZiNGVjY2E3NmMzMyIsImVtYWlsIjoieHN1cjIzNEBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NDQzMTI0ODgsImV4cCI6MTc0NDkxNzI4OH0.FU5YTahXg-7EUVL8K0VjSbR81SzdHe7uu5Z8NyWOXTU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"problemIds\":[\"3c65e45b-fbd1-46f4-8187-97efe89ecd5d\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/playlist/ba62bcfb-caef-42df-8cbd-ac3f508a0279/remove-problem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"playlist",
+								"ba62bcfb-caef-42df-8cbd-ac3f508a0279",
+								"remove-problem"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

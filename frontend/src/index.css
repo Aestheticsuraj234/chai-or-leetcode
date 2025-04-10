@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+  
+  .animate-blink {
+    animation: blink 1s infinite;
+  }
+  
+  .animate-pulse {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .delay-100 {
+    animation-delay: 1s;
+  }
+  
+  .delay-200 {
+    animation-delay: 2s;
+  }
+  
+  .delay-300 {
+    animation-delay: 3s;
+  }
+  
+  .delay-500 {
+    animation-delay: 5s;
+  }
+  
+  .delay-700 {
+    animation-delay: 7s;
+  }
+  
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+  

@@ -2,46 +2,58 @@ import jwt from 'jsonwebtoken';
 import { db } from '../libs/db.js';
 
 export const authenticate = async (req, res, next) => {
-    const authHeader = req.headers.authorization;
+  try {
+    const token = req.cookies.jwt; // Assuming the cookie name is 'token'
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized - No Token Provided" });
     }
 
-    const token = authHeader.split(' ')[1];
-
+    let decoded;
     try {
-        // Check if the token is blacklisted
-        const blacklistedToken = await db.tokenBlacklist.findUnique({
-            where: { token },
-        });
-
-        if (blacklistedToken) {
-            return res.status(401).json({ error: 'Token has been invalidated.' });
-        }
-
-        // Verify the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-
-        next();
-    } catch (error) {
-        console.error('Token verification failed:', error.message);
-        res.status(400).json({ error: 'Invalid or expired token.' });
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ message: "Unauthorized - Invalid Token" });
     }
+
+    const user = await db.user.findUnique({
+      where: { id: decoded.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Error in authenticate middleware:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
-
-export const checkAdmin = async(req, res, next) => {
-//    check from the database if the user is admin
+export const checkAdmin = async (req, res, next) => {
+  try {
     const userId = req.user.id;
 
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
 
-    console.log(user);
-    if (user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Access denied. User is not an admin.' });
+    if (!user || user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Access denied. User is not an admin.' });
     }
 
     next();
+  } catch (error) {
+    console.error("Error in checkAdmin middleware:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
