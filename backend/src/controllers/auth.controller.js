@@ -82,6 +82,39 @@ export const login = async (req, res) => {
     }
 };     
 
+
+export const logout = async (req, res) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(400).json({ error: 'Authorization header missing or invalid' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    try {
+        // Decode the token to get its expiration time
+        const decodedToken = jwt.decode(token);
+        const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+
+        // Add the token to the blacklist
+        await db.tokenBlacklist.create({
+            data: {
+                token,
+                expiresAt: new Date(expirationTime),
+            },
+        });
+
+        // Respond with success
+        res.status(200).json({
+            success: true,
+            message: 'Logout successful',
+        });
+    } catch (error) {
+        console.error('Error during logout:', error.message);
+        res.status(500).json({ error: 'Failed to log out' });
+    }
+};
 export const getSubmissions = async (req, res) => {
     try {
         const submissions = await db.submission.findMany({

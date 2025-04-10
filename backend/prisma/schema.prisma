@@ -38,6 +38,14 @@ model User {
   @@index([role])
 }
 
+model TokenBlacklist {
+  id      String   @id @default(uuid())
+  token   String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())  
+
+}
+
 model Problem {
   id          String       @id @default(uuid())
   title       String
