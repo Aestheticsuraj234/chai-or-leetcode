@@ -1,16 +1,16 @@
  Core Features
-1. User Authentication:
+1. User Authentication:✅
 
    - Login and signup using JWT tokens.
    - Protected routes for authenticated users.
 
-2. Admin Features:
+2. Admin Features:✅
 
    - Create custom coding problems.
    - Test problems with Judge0 before saving.
    - AI-generated problem creation. ( on hold)
 
-3. Problem Management:
+3. Problem Management:✅
 
    - Admin can view, edit, and delete problems.
    - Users can browse all available problems.
@@ -22,8 +22,8 @@
 
 5. Submission Tracking:
 
-   - Save user submissions to the database.
-   - Mark problems as "Solved" after successful submission.
+   - Save user submissions to the database.✅
+   - Mark problems as "Solved" after successful submission.✅
 
 6. Progress Tracking:
 

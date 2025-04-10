@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -19,6 +13,12 @@ enum UserRole {
   USER
 }
 
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String?  @unique
@@ -29,15 +29,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  problem Problem[]
+  // Relationships
+  problems       Problem[] // Problems created by this user
+  submissions    Submission[] // Submissions made by this user
+  solvedProblems ProblemSolved[] // Problems solved by this user
+  Sheets         Sheet[]
 
   @@index([role])
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
 }
 
 model Problem {
@@ -46,7 +44,7 @@ model Problem {
   description String
   difficulty  Difficulty // EASY, MEDIUM, HARD
   tags        String[]
-  userId      String
+  userId      String // Creator of the problem
   examples    Json // Language-specific examples
   constraints String
   hints       String?
@@ -59,7 +57,102 @@ model Problem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relationships
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submissions Submission[] // Submissions for this problem
+  solvedBy    ProblemSolved[] // Users who have solved this problem
+
+  subtopics ProblemInSubtopic[]
 
   @@index([difficulty])
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  userId        String // User who submitted the code
+  problemId     String // Problem for which the code was submitted
+  sourceCode    String // Submitted code
+  language      String // Programming language used
+  stdin         String? // Input provided for execution
+  stdout        String? // Output of the execution
+  stderr        String? // Error messages (if any)
+  compileOutput String? // Compilation errors (if any)
+  status        String // Execution status (e.g., Accepted, Wrong Answer, etc.)
+  memory        String? // Memory usage
+  time          String? // Execution time
+  createdAt     DateTime @default(now())
+
+  // Relationships
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model ProblemSolved {
+  id        String   @id @default(uuid())
+  userId    String // User who solved the problem
+  problemId String // Problem that was solved
+  createdAt DateTime @default(now())
+
+  // Relationships
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId]) // Ensure a user cannot solve the same problem multiple times
+}
+
+model Sheet {
+  id          String   @id @default(uuid())
+  name        String // Name of the sheet (e.g., "DSA Prep")
+  description String? // Optional description
+  userId      String // User who created the sheet
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  topics Topic[] // Topics within the sheet
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Topic {
+  id        String   @id @default(uuid())
+  name      String // Name of the topic (e.g., "Arrays")
+  sheetId   String // Sheet this topic belongs to
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subtopics Subtopic[] // Subtopics within the topic
+
+  sheet Sheet @relation(fields: [sheetId], references: [id], onDelete: Cascade)
+
+  @@index([sheetId])
+}
+
+model Subtopic {
+  id        String   @id @default(uuid())
+  name      String // Name of the subtopic (e.g., "Two Sum")
+  topicId   String // Topic this subtopic belongs to
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  problems ProblemInSubtopic[] // Problems associated with the subtopic
+
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@index([topicId])
+}
+
+model ProblemInSubtopic {
+  id         String   @id @default(uuid())
+  subtopicId String // Subtopic this problem belongs to
+  problemId  String // Problem ID
+  createdAt  DateTime @default(now())
+
+  subtopic Subtopic @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+  problem  Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([subtopicId, problemId]) // Ensure no duplicate problems in the same subtopic
 }
