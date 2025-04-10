@@ -169,7 +169,7 @@ exports.Prisma.ProblemSolvedScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.SheetScalarFieldEnum = {
+exports.Prisma.PlaylistScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
@@ -178,25 +178,9 @@ exports.Prisma.SheetScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.TopicScalarFieldEnum = {
+exports.Prisma.ProblemInPlaylistScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  sheetId: 'sheetId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.SubtopicScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  topicId: 'topicId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ProblemInSubtopicScalarFieldEnum = {
-  id: 'id',
-  subtopicId: 'subtopicId',
+  playlistId: 'playlistId',
   problemId: 'problemId',
   createdAt: 'createdAt'
 };
@@ -241,10 +225,8 @@ exports.Prisma.ModelName = {
   Problem: 'Problem',
   Submission: 'Submission',
   ProblemSolved: 'ProblemSolved',
-  Sheet: 'Sheet',
-  Topic: 'Topic',
-  Subtopic: 'Subtopic',
-  ProblemInSubtopic: 'ProblemInSubtopic'
+  Playlist: 'Playlist',
+  ProblemInPlaylist: 'ProblemInPlaylist'
 };
 
 /**

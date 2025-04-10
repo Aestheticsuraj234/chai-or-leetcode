@@ -33,7 +33,7 @@ model User {
   problems    Problem[]          // Problems created by this user
   submissions Submission[]       // Submissions made by this user
   solvedProblems ProblemSolved[] // Problems solved by this user
-  Sheets      Sheet[]
+  playlists   Playlist[]         // Playlists created by this user
 
   @@index([role])
 }
@@ -61,8 +61,7 @@ model Problem {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   submissions Submission[] // Submissions for this problem
   solvedBy    ProblemSolved[] // Users who have solved this problem
-
-  subtopics ProblemInSubtopic[]
+  problemsPlaylists   ProblemInPlaylist[]   // Playlists that include this problem
 
   @@index([difficulty])
 }
@@ -100,60 +99,35 @@ model ProblemSolved {
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
 
+
+
   @@unique([userId, problemId]) // Ensure a user cannot solve the same problem multiple times
 }
 
-model Sheet {
-  id          String     @id @default(uuid())
-  name        String     // Name of the sheet (e.g., "DSA Prep")
-  description String?    // Optional description
-  userId      String     // User who created the sheet
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
 
-  topics Topic[] // Topics within the sheet
+model Playlist {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  userId      String    // User who created the playlist
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  problems ProblemInPlaylist[] // Problems in this playlist
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@unique([name, userId]) // Ensure unique playlist names per user
 }
 
-model Topic {
-  id       String    @id @default(uuid())
-  name     String    // Name of the topic (e.g., "Arrays")
-  sheetId  String    // Sheet this topic belongs to
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  subtopics Subtopic[] // Subtopics within the topic
-
-  sheet Sheet @relation(fields: [sheetId], references: [id], onDelete: Cascade)
-
-  @@index([sheetId])
-}
-
-model Subtopic {
-  id        String    @id @default(uuid())
-  name      String    // Name of the subtopic (e.g., "Two Sum")
-  topicId   String    // Topic this subtopic belongs to
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  problems ProblemInSubtopic[] // Problems associated with the subtopic
-
-  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
-  @@index([topicId])
-}
-
-model ProblemInSubtopic {
+model ProblemInPlaylist {
   id         String   @id @default(uuid())
-  subtopicId String   // Subtopic this problem belongs to
-  problemId  String   // Problem ID
+  playlistId String
+  problemId  String
   createdAt  DateTime @default(now())
 
-  subtopic Subtopic @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
   problem  Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
-  @@unique([subtopicId, problemId]) // Ensure no duplicate problems in the same subtopic
+  @@unique([playlistId, problemId]) // Ensure no duplicate problems in the same playlist
 }
