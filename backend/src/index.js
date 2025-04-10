@@ -21,7 +21,7 @@ app.use(express.json());
 app.use("/api/v1/auth" , authRoutes);
 app.use("/api/v1/problems" , problemRoutes);
 app.use("/api/v1/execute-code" , executeCodeRoutes)
-app.use("api/v1/playlist" , playlistRoutes)
+app.use("/api/v1/playlist" , playlistRoutes)
 
 // Start the server
 app.listen(process.env.PORT, () => {
