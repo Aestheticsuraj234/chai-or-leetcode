@@ -87,7 +87,16 @@ export const createProblem = async (req, res) => {
 
 export const getAllProblems = async (req, res) => {
   try {
-    const problems = await db.problem.findMany();
+    // Get all the problem and also check that this is solved by current user or not
+    const problems = await db.problem.findMany({
+      include: {
+        solvedBy:{
+          where: {
+            userId: req.user.id
+          }
+        }
+      }
+    });
     res.status(200).json({
       success: true,
       message: 'Problems fetched successfully',

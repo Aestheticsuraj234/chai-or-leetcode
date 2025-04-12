@@ -20,6 +20,7 @@ export const authenticate = async (req, res, next) => {
       where: { id: decoded.id },
       select: {
         id: true,
+        image: true,
         name: true,
         email: true,
         role: true,

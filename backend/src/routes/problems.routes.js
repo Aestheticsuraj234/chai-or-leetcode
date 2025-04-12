@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/create-problem", authenticate, checkAdmin, createProblem);
 
 // Get all problems (Public)
-router.get("/get-all-problems", getAllProblems);
+router.get("/get-all-problems", authenticate , getAllProblems);
 
 // Get a problem by ID (Public)
 router.get("/get-problem/:id", getProblemById);
