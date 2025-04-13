@@ -169,6 +169,21 @@ exports.Prisma.SubmissionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TestCaseResultScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  testCase: 'testCase',
+  passed: 'passed',
+  stdout: 'stdout',
+  expected: 'expected',
+  stderr: 'stderr',
+  compileOutput: 'compileOutput',
+  status: 'status',
+  memory: 'memory',
+  time: 'time',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ProblemSolvedScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -232,6 +247,7 @@ exports.Prisma.ModelName = {
   TokenBlacklist: 'TokenBlacklist',
   Problem: 'Problem',
   Submission: 'Submission',
+  TestCaseResult: 'TestCaseResult',
   ProblemSolved: 'ProblemSolved',
   Playlist: 'Playlist',
   ProblemInPlaylist: 'ProblemInPlaylist'

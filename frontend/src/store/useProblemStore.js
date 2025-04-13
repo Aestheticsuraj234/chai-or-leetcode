@@ -15,7 +15,7 @@ export const useProblemStore = create((set, get) => ({
 
       set({ problems: res.data.problems });
 
-      toast.success(res.data.message);
+     
     } catch (error) {
       console.log("Error getting all problems", error);
       toast.error("Error getting all problems");

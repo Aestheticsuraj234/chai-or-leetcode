@@ -92,9 +92,31 @@ model Submission {
   // Relationships
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  testCases TestCaseResult[]
 
   @@index([status])
 }
+
+model TestCaseResult {
+  id           String     @id @default(uuid())
+  submissionId String
+  testCase     Int
+  passed       Boolean
+  stdout       String?
+  expected     String
+  stderr       String?
+  compileOutput String?
+  status       String
+  memory       String?
+  time         String?
+
+  createdAt    DateTime   @default(now())
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+}
+
 
 model ProblemSolved {
   id        String   @id @default(uuid())
