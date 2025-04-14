@@ -77,7 +77,7 @@ model Submission {
   id            String   @id @default(uuid())
   userId        String // User who submitted the code
   problemId     String // Problem for which the code was submitted
-  sourceCode    String // Submitted code
+  sourceCode    Json // Submitted code
   language      String // Programming language used
   stdin         String? // Input provided for execution
   stdout        String? // Output of the execution

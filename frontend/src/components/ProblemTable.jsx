@@ -1,13 +1,24 @@
 import React, { useState, useMemo } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Link } from "react-router-dom";
+import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { useActions } from "../store/useActions";
+import AddToPlaylistModal from "./AddToPlaylist";
+import CreatePlaylistModal from "./CreatePlaylistModal";
+import { usePlaylistStore } from "../store/usePlaylistStore";
+
 
 const ProblemsTable = ({ problems }) => {
   const { authUser } = useAuthStore();
+  const { onDeleteProblem } = useActions();
+  const { createPlaylist } = usePlaylistStore();
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState("ALL");
   const [selectedTag, setSelectedTag] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
 
   // Extract all unique tags from problems
   const allTags = useMemo(() => {
@@ -44,11 +55,35 @@ const ProblemsTable = ({ problems }) => {
     );
   }, [filteredProblems, currentPage]);
 
+  const handleDelete = (id) => {
+    onDeleteProblem(id);
+  };
+
+  const handleCreatePlaylist = async (data) => {
+    await createPlaylist(data);
+  };
+
+  const handleAddToPlaylist = (problemId) => {
+    setSelectedProblemId(problemId);
+    setIsAddToPlaylistModalOpen(true);
+  };
+
   return (
     <div className="w-full max-w-6xl mx-auto mt-10">
+      {/* Header with Create Playlist Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Problems</h2>
+        <button
+          className="btn btn-primary gap-2"
+          onClick={() => setIsCreateModalOpen(true)}
+        >
+          <Plus className="w-4 h-4" />
+          Create Playlist
+        </button>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by title"
@@ -56,7 +91,6 @@ const ProblemsTable = ({ problems }) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {/* Difficulty Filter */}
         <select
           className="select select-bordered bg-base-200"
           value={difficulty}
@@ -69,7 +103,6 @@ const ProblemsTable = ({ problems }) => {
             </option>
           ))}
         </select>
-        {/* Tag Filter */}
         <select
           className="select select-bordered bg-base-200"
           value={selectedTag}
@@ -83,21 +116,22 @@ const ProblemsTable = ({ problems }) => {
           ))}
         </select>
       </div>
+
       {/* Table */}
       <div className="overflow-x-auto rounded-xl shadow-md">
         <table className="table table-zebra table-lg bg-base-200 text-base-content">
           <thead className="bg-base-300">
             <tr>
-              <th>Solved</th> {/* New column for solved status */}
+              <th>Solved</th>
               <th>Title</th>
               <th>Tags</th>
               <th>Difficulty</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedProblems.length > 0 ? (
               paginatedProblems.map((problem) => {
-                // Check if the current user has solved the problem
                 const isSolved = problem.solvedBy.some(
                   (user) => user.userId === authUser?.id
                 );
@@ -111,7 +145,11 @@ const ProblemsTable = ({ problems }) => {
                         className="checkbox checkbox-sm"
                       />
                     </td>
-                    <Link to={`/problem/${problem.id}`}><td className="font-semibold hover:underline">{problem.title}</td></Link>
+                    <td>
+                      <Link to={`/problem/${problem.id}`} className="font-semibold hover:underline">
+                        {problem.title}
+                      </Link>
+                    </td>
                     <td>
                       <div className="flex flex-wrap gap-1">
                         {(problem.tags || []).map((tag, idx) => (
@@ -137,6 +175,30 @@ const ProblemsTable = ({ problems }) => {
                         {problem.difficulty}
                       </span>
                     </td>
+                    <td>
+                      <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
+                        {authUser?.role === "ADMIN" && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleDelete(problem.id)}
+                              className="btn btn-sm btn-error"
+                            >
+                              <TrashIcon className="w-4 h-4 text-white" />
+                            </button>
+                            <button disabled className="btn btn-sm btn-warning">
+                              <PencilIcon className="w-4 h-4 text-white" />
+                            </button>
+                          </div>
+                        )}
+                        <button
+                          className="btn btn-sm btn-outline flex gap-2 items-center"
+                          onClick={() => handleAddToPlaylist(problem.id)}
+                        >
+                          <Bookmark className="w-4 h-4" />
+                          <span className="hidden sm:inline">Save to Playlist</span>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })
@@ -150,6 +212,7 @@ const ProblemsTable = ({ problems }) => {
           </tbody>
         </table>
       </div>
+
       {/* Pagination */}
       <div className="flex justify-center mt-6 gap-2">
         <button
@@ -170,6 +233,19 @@ const ProblemsTable = ({ problems }) => {
           Next
         </button>
       </div>
+
+      {/* Modals */}
+      <CreatePlaylistModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreatePlaylist}
+      />
+      
+      <AddToPlaylistModal
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      />
     </div>
   );
 };

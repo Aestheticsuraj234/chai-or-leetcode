@@ -6,13 +6,16 @@ import LoginPage from "./pages/LoginPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
-import Navbar from "./components/Navbar";
+
 import ProblemPage from "./pages/ProblemPage";
 import Layout from "./components/Layout";
 
+import AddProblem from "./pages/AddProblem";
+import Profile from "./pages/Profile";
+import AdminRoute from "./components/AdminRoute";
+
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-
 
   console.log(authUser);
 
@@ -26,18 +29,17 @@ const App = () => {
         <Loader className="size-10 animate-spin" />
       </div>
     );
-    
+
   return (
     <div className="flex flex-col items-center justify-start  ">
       {/* <Navbar/> */}
-      <Toaster/>
-      <Routes  >
-        <Route path="/" element={<Layout/>} >
-        <Route
-          index
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
-        />
-      
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route
+            index
+            element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          />
         </Route>
         <Route
           path="/signup"
@@ -49,8 +51,19 @@ const App = () => {
         />
 
         <Route
-        path="/problem/:id"
-        element={authUser ? <ProblemPage /> : <Navigate to="/login" />}
+          path="/problem/:id"
+          element={authUser ? <ProblemPage /> : <Navigate to="/login" />}
+        />
+        <Route element={<AdminRoute />}>
+          <Route
+            path="/add-problem"
+            element={authUser ? <AddProblem /> : <Navigate to="/login" />}
+          />
+        </Route>
+
+        <Route
+          path="/profile"
+          element={authUser ? <Profile /> : <Navigate to="/login" />}
         />
       </Routes>
     </div>

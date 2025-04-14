@@ -17,12 +17,19 @@ export const createPlayList = async (req, res) => {
       message: 'Playlist created successfully',
       playList,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error('Error creating playlist:', error);
+    res.status(500).json({ error: 'Failed to create playlist' });
+  }
 };
 
 export const getPlayAllListDetails = async (req, res) => {
   try {
-    const playLists = await db.playlist.findMany();
+    const playLists = await db.playlist.findMany({
+      where: {
+        userId: req.user.id,
+      }
+    });
     res.status(200).json({
       success: true,
       message: 'Playlist fetched successfully',
@@ -38,7 +45,7 @@ export const getPlayListDetails = async (req, res) => {
 
   try {
     const playList = await db.playlist.findUnique({
-      where: { id: playlistId },
+      where: { id: playlistId , userId: req.user.id },
       include: {
         problems: {
           include: {

@@ -38,16 +38,16 @@ export const register = async (req, res) => {
     res.status(201).json({
       message: "User registered successfully",
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        image: user?.image,
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+        image: newUser?.image,
       },
     });
   } catch (error) {
     console.error("Registration Error:", error);
-    res.status(500).json({ error: "Registration failed" });
+    res.status(500).json({ error: error.message });
   }
 };
 
