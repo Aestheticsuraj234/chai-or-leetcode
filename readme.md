@@ -69,8 +69,7 @@ This is a **LeetLab - A Leetcode Inspired Product** designed to help developers 
 - Node.js (v16 or higher)
 - npm or yarn
 - PostgreSQL database
-- Judge0 API key (for code execution)
-
+- Judge0 API 
 ### Steps to Run Locally
 
 1. **Clone the Repository**
