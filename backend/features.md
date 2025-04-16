@@ -29,7 +29,8 @@
 
    - Highlight solved problems for users.
    - Display user progress (e.g., number of problems solved).
-
+![alt text](image.png)
+![alt text](image-1.png)
 ---
 AI-Powered Features
 

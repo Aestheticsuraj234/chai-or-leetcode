@@ -3,7 +3,7 @@ import { db } from '../libs/db.js';
 
 export const authenticate = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt; // Assuming the cookie name is 'token'
+    const token = req.cookies.jwt; // Assuming the cookie name is 'jwt'
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized - No Token Provided" });

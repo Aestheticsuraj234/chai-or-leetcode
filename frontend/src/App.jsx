@@ -17,7 +17,7 @@ import AdminRoute from "./components/AdminRoute";
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
-  console.log(authUser);
+
 
   useEffect(() => {
     checkAuth();

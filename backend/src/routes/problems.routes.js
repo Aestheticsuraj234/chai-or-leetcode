@@ -20,7 +20,7 @@ router.get("/get-all-problems", authenticate , getAllProblems);
 // Get a problem by ID (Public)
 router.get("/get-problem/:id", getProblemById);
 
-// Update a problem by ID (Admin only)
+// Update a problem by ID (Admin only) put is used TO UPDATE ALL FIELDS AND PATCH IS USED TO UPDATE SPECIFIC FIELDS ONLY
 router.put("/update-problem/:id", authenticate, checkAdmin, updateProblem);
 
 // Delete a problem by ID (Admin only)
