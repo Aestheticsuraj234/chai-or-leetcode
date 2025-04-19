@@ -16,6 +16,7 @@ import Editor from "@monaco-editor/react";
 import { useState } from "react";
 import { axiosInstance } from "../libs/axios";
 import toast from "react-hot-toast";
+import {Navigate, useNavigate} from "react-router-dom";
 
 const problemSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -64,276 +65,249 @@ const problemSchema = z.object({
 
 // Sample problem data for pre-filling the form
 // Sample problem data for pre-filling the form
-const sampleProblemData = {
-  title: "Two Sum",
+const sampledpData = {
+  title: "Climbing Stairs",
+  category: "dp", // Dynamic Programming
   description:
-    "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
+    "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
   difficulty: "EASY",
-  tags: ["Array", "Hash Table", "Algorithms"],
-  constraints:
-    "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9\nOnly one valid answer exists.",
+  tags: ["Dynamic Programming", "Math", "Memoization"],
+  constraints: "1 <= n <= 45",
   hints:
-    "A really efficient solution can be found using a hash map. Try to use the two-pass hash table approach.",
+    "To reach the nth step, you can either come from the (n-1)th step or the (n-2)th step.",
   editorial:
-    "The brute force approach is to check every possible pair of numbers in the array. However, we can use a hash map to optimize this to O(n) time complexity.",
+    "This is a classic dynamic programming problem. The number of ways to reach the nth step is the sum of the number of ways to reach the (n-1)th step and the (n-2)th step, forming a Fibonacci-like sequence.",
   testCases: [
     {
-      input: "[2,7,11,15]\n9",
-      output: "[0,1]",
+      input: "2",
+      output: "2",
     },
     {
-      input: "[3,2,4]\n6",
-      output: "[1,2]",
+      input: "3",
+      output: "3",
     },
     {
-      input: "[3,3]\n6",
-      output: "[0,1]",
+      input: "4",
+      output: "5",
     },
   ],
   examples: {
     JAVASCRIPT: {
-      input: "nums = [2,7,11,15], target = 9",
-      output: "[0,1]",
-      explanation: "Because nums[0] + nums[1] == 9, we return [0, 1].",
+      input: "n = 2",
+      output: "2",
+      explanation:
+        "There are two ways to climb to the top:\n1. 1 step + 1 step\n2. 2 steps",
     },
     PYTHON: {
-      input: "nums = [2,7,11,15], target = 9",
-      output: "[0,1]",
-      explanation: "Because nums[0] + nums[1] == 9, we return [0, 1].",
+      input: "n = 3",
+      output: "3",
+      explanation:
+        "There are three ways to climb to the top:\n1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step",
     },
     JAVA: {
-      input: "nums = [2,7,11,15], target = 9",
-      output: "[0,1]",
-      explanation: "Because nums[0] + nums[1] == 9, we return [0, 1].",
+      input: "n = 4",
+      output: "5",
+      explanation:
+        "There are five ways to climb to the top:\n1. 1 step + 1 step + 1 step + 1 step\n2. 1 step + 1 step + 2 steps\n3. 1 step + 2 steps + 1 step\n4. 2 steps + 1 step + 1 step\n5. 2 steps + 2 steps",
     },
   },
   codeSnippets: {
     JAVASCRIPT: `/**
-   * @param {number[]} nums
-   * @param {number} target
-   * @return {number[]}
-   */
-  function twoSum(nums, target) {
-    // Write your code here
+* @param {number} n
+* @return {number}
+*/
+function climbStairs(n) {
+// Write your code here
+}
+
+// Parse input and execute
+const readline = require('readline');
+const rl = readline.createInterface({
+input: process.stdin,
+output: process.stdout,
+terminal: false
+});
+
+rl.on('line', (line) => {
+const n = parseInt(line.trim());
+const result = climbStairs(n);
+
+console.log(result);
+rl.close();
+});`,
+    PYTHON: `class Solution:
+  def climbStairs(self, n: int) -> int:
+      # Write your code here
+      pass
+
+# Input parsing
+if __name__ == "__main__":
+  import sys
+  
+  # Parse input
+  n = int(sys.stdin.readline().strip())
+  
+  # Solve
+  sol = Solution()
+  result = sol.climbStairs(n)
+  
+  # Print result
+  print(result)`,
+    JAVA: `import java.util.Scanner;
+
+class Main {
+  public int climbStairs(int n) {
+      // Write your code here
+      return 0;
   }
   
-  // Add readline for dynamic input handling
-  const readline = require('readline');
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-  });
-  
-  // Process input lines
-  let lines = [];
-  rl.on('line', (line) => {
-    lines.push(line);
-    
-    // When we have received both lines (nums array and target)
-    if (lines.length === 2) {
-      const nums = JSON.parse(lines[0].replace(/'/g, '"'));
-      const target = parseInt(lines[1]);
+  public static void main(String[] args) {
+      Scanner scanner = new Scanner(System.in);
+      int n = Integer.parseInt(scanner.nextLine().trim());
       
-      // Call the solution function
-      const result = twoSum(nums, target);
+      // Use Main class instead of Solution
+      Main main = new Main();
+      int result = main.climbStairs(n);
       
-      // Output result
-      console.log(JSON.stringify(result));
-      rl.close();
-    }
-  });`,
-    PYTHON: `from typing import List
-  
-  class Solution:
-      def twoSum(self, nums: List[int], target: int) -> List[int]:
-          # Write your code here
-          pass
-  
-  # Input parsing
-  if __name__ == "__main__":
-      import sys
-      lines = sys.stdin.read().strip().split('\\n')
-      
-      # Parse input
-      nums = eval(lines[0])  # Convert string representation to list
-      target = int(lines[1])
-      
-      # Call solution
-      sol = Solution()
-      result = sol.twoSum(nums, target)
-      
-      # Output result
-      print(result)`,
-    JAVA: `import java.util.*;
-  
-  class Solution {
-      public int[] twoSum(int[] nums, int target) {
-          // Write your code here
-          return new int[]{};
-      }
-  
-      public static void main(String[] args) {
-          Scanner scanner = new Scanner(System.in);
-          
-          // Parse input array
-          String numsInput = scanner.nextLine().trim();
-          numsInput = numsInput.substring(1, numsInput.length() - 1); // Remove brackets
-          String[] numStrings = numsInput.split(",");
-          int[] nums = new int[numStrings.length];
-          
-          for (int i = 0; i < numStrings.length; i++) {
-              nums[i] = Integer.parseInt(numStrings[i].trim());
-          }
-          
-          // Parse target
-          int target = Integer.parseInt(scanner.nextLine().trim());
-          
-          // Solve and output
-          Solution solution = new Solution();
-          int[] result = solution.twoSum(nums, target);
-          
-          // Format and print result
-          System.out.print("[");
-          for (int i = 0; i < result.length; i++) {
-              System.out.print(result[i]);
-              if (i < result.length - 1) {
-                  System.out.print(",");
-              }
-          }
-          System.out.println("]");
-          
-          scanner.close();
-      }
-  }`,
+      System.out.println(result);
+      scanner.close();
+  }
+}`,
   },
   referenceSolutions: {
     JAVASCRIPT: `/**
-   * @param {number[]} nums
-   * @param {number} target
-   * @return {number[]}
-   */
-  function twoSum(nums, target) {
-    const map = new Map();
-    
-    for (let i = 0; i < nums.length; i++) {
-      const complement = target - nums[i];
+* @param {number} n
+* @return {number}
+*/
+function climbStairs(n) {
+// Base cases
+if (n <= 2) {
+  return n;
+}
+
+// Dynamic programming approach
+let dp = new Array(n + 1);
+dp[1] = 1;
+dp[2] = 2;
+
+for (let i = 3; i <= n; i++) {
+  dp[i] = dp[i - 1] + dp[i - 2];
+}
+
+return dp[n];
+
+/* Alternative approach with O(1) space
+let a = 1; // ways to climb 1 step
+let b = 2; // ways to climb 2 steps
+
+for (let i = 3; i <= n; i++) {
+  let temp = a + b;
+  a = b;
+  b = temp;
+}
+
+return n === 1 ? a : b;
+*/
+}
+
+// Parse input and execute
+const readline = require('readline');
+const rl = readline.createInterface({
+input: process.stdin,
+output: process.stdout,
+terminal: false
+});
+
+rl.on('line', (line) => {
+const n = parseInt(line.trim());
+const result = climbStairs(n);
+
+console.log(result);
+rl.close();
+});`,
+    PYTHON: `class Solution:
+  def climbStairs(self, n: int) -> int:
+      # Base cases
+      if n <= 2:
+          return n
       
-      if (map.has(complement)) {
-        return [map.get(complement), i];
+      # Dynamic programming approach
+      dp = [0] * (n + 1)
+      dp[1] = 1
+      dp[2] = 2
+      
+      for i in range(3, n + 1):
+          dp[i] = dp[i - 1] + dp[i - 2]
+      
+      return dp[n]
+      
+      # Alternative approach with O(1) space
+      # a, b = 1, 2
+      # 
+      # for i in range(3, n + 1):
+      #     a, b = b, a + b
+      # 
+      # return a if n == 1 else b
+
+# Input parsing
+if __name__ == "__main__":
+  import sys
+  
+  # Parse input
+  n = int(sys.stdin.readline().strip())
+  
+  # Solve
+  sol = Solution()
+  result = sol.climbStairs(n)
+  
+  # Print result
+  print(result)`,
+    JAVA: `import java.util.Scanner;
+
+class Main {
+  public int climbStairs(int n) {
+      // Base cases
+      if (n <= 2) {
+          return n;
       }
       
-      map.set(nums[i], i);
-    }
-    
-    return [];
+      // Dynamic programming approach
+      int[] dp = new int[n + 1];
+      dp[1] = 1;
+      dp[2] = 2;
+      
+      for (int i = 3; i <= n; i++) {
+          dp[i] = dp[i - 1] + dp[i - 2];
+      }
+      
+      return dp[n];
+      
+      /* Alternative approach with O(1) space
+      int a = 1; // ways to climb 1 step
+      int b = 2; // ways to climb 2 steps
+      
+      for (int i = 3; i <= n; i++) {
+          int temp = a + b;
+          a = b;
+          b = temp;
+      }
+      
+      return n == 1 ? a : b;
+      */
   }
   
-  // Add readline for dynamic input handling
-  const readline = require('readline');
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    terminal: false
-  });
-  
-  // Process input lines
-  let lines = [];
-  rl.on('line', (line) => {
-    lines.push(line);
-    
-    // When we have received both lines (nums array and target)
-    if (lines.length === 2) {
-      const nums = JSON.parse(lines[0].replace(/'/g, '"'));
-      const target = parseInt(lines[1]);
+  public static void main(String[] args) {
+      Scanner scanner = new Scanner(System.in);
+      int n = Integer.parseInt(scanner.nextLine().trim());
       
-      // Call the solution function
-      const result = twoSum(nums, target);
+      // Use Main class instead of Solution
+      Main main = new Main();
+      int result = main.climbStairs(n);
       
-      // Output result
-      console.log(JSON.stringify(result));
-      rl.close();
-    }
-  });`,
-    PYTHON: `from typing import List
-  
-  class Solution:
-      def twoSum(self, nums: List[int], target: int) -> List[int]:
-          hashmap = {}
-          for i, num in enumerate(nums):
-              complement = target - num
-              if complement in hashmap:
-                  return [hashmap[complement], i]
-              hashmap[num] = i
-          return []
-  
-  # Input parsing
-  if __name__ == "__main__":
-      import sys
-      lines = sys.stdin.read().strip().split('\\n')
-      
-      # Parse input
-      nums = eval(lines[0])  # Convert string representation to list
-      target = int(lines[1])
-      
-      # Call solution
-      sol = Solution()
-      result = sol.twoSum(nums, target)
-      
-      # Output result
-      print(result)`,
-    JAVA: `import java.util.*;
-  
-  class Solution {
-      public int[] twoSum(int[] nums, int target) {
-          Map<Integer, Integer> map = new HashMap<>();
-          
-          for (int i = 0; i < nums.length; i++) {
-              int complement = target - nums[i];
-              
-              if (map.containsKey(complement)) {
-                  return new int[] { map.get(complement), i };
-              }
-              
-              map.put(nums[i], i);
-          }
-          
-          return new int[0];
-      }
-  
-      public static void main(String[] args) {
-          Scanner scanner = new Scanner(System.in);
-          
-          // Parse input array
-          String numsInput = scanner.nextLine().trim();
-          numsInput = numsInput.substring(1, numsInput.length() - 1); // Remove brackets
-          String[] numStrings = numsInput.split(",");
-          int[] nums = new int[numStrings.length];
-          
-          for (int i = 0; i < numStrings.length; i++) {
-              nums[i] = Integer.parseInt(numStrings[i].trim());
-          }
-          
-          // Parse target
-          int target = Integer.parseInt(scanner.nextLine().trim());
-          
-          // Solve and output
-          Solution solution = new Solution();
-          int[] result = solution.twoSum(nums, target);
-          
-          // Format and print result
-          System.out.print("[");
-          for (int i = 0; i < result.length; i++) {
-              System.out.print(result[i]);
-              if (i < result.length - 1) {
-                  System.out.print(",");
-              }
-          }
-          System.out.println("]");
-          
-          scanner.close();
-      }
-  }`,
+      System.out.println(result);
+      scanner.close();
+  }
+}`,
   },
 };
 
@@ -539,8 +513,8 @@ public class Main {
 };
 
 const CreateProblemForm = () => {
-  const [sampleType, setSampleType] = useState("array"); // Default to array problem
-
+  const [sampleType, setSampleType] = useState("DP"); // Default to array problem
+const navigation = useNavigate();
   const {
     register,
     control,
@@ -599,6 +573,7 @@ const CreateProblemForm = () => {
       
       console.log(res.data);
       toast.success(res.data.message);
+      navigation("/");
     } catch (error) {
       console.log("Error creating problem", error);
       toast.error("Error creating problem");
@@ -610,7 +585,7 @@ const CreateProblemForm = () => {
   // Function to load sample data
   const loadSampleData = () => {
     const sampleData =
-      sampleType === "array" ? sampleProblemData : sampleStringProblem;
+      sampleType === "DP" ? sampledpData : sampleStringProblem;
 
     // Replace the tags and test cases arrays
     replaceTags(sampleData.tags.map((tag) => tag));
@@ -627,7 +602,7 @@ const CreateProblemForm = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 pb-4 border-b">
             <h2 className="card-title text-2xl md:text-3xl flex items-center gap-3">
               <FileText className="w-6 h-6 md:w-8 md:h-8 text-primary" />
-              Create New Problem
+              Create Problem
             </h2>
 
             <div className="flex flex-col md:flex-row gap-3 mt-4 md:mt-0">
@@ -635,11 +610,11 @@ const CreateProblemForm = () => {
                 <button
                   type="button"
                   className={`btn join-item ${
-                    sampleType === "array" ? "btn-active" : ""
+                    sampleType === "DP" ? "btn-active" : ""
                   }`}
                   onClick={() => setSampleType("array")}
                 >
-                  Array Problem
+                  DP Problem
                 </button>
                 <button
                   type="button"
