@@ -12,6 +12,16 @@ export function getJudge0LanguageId(language) {
     return languageMap[language.toUpperCase()];
 }
 
+export function getLanguageName(languageId) {
+    const LANGUAGE_NAMES = {
+      74: "TypeScript",
+      63: "JavaScript",
+      71: "Python",
+      62: "Java",
+    };
+    return LANGUAGE_NAMES[languageId] || "Unknown";
+  }
+
 // Poll Judge0 for result until it's no longer "In Queue" or "Processing"
 export async function getJudge0Result(token) {
     let result;

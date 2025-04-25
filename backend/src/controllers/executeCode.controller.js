@@ -1,5 +1,6 @@
 import { db } from "../libs/db.js";
 import axios from "axios";
+import { getLanguageName, pollBatchResults, submitBatch } from "../libs/problem.libs.js";
 
 // Main function to execute the code
 export const executeCode = async (req, res) => {
@@ -17,78 +18,46 @@ export const executeCode = async (req, res) => {
       return res.status(400).json({ error: "Invalid or missing test cases" });
     }
 
- 
+    // Create batch submissions
+    const submissions = stdin.map((input, i) => ({
+      source_code,
+      language_id,
+      stdin: input,
+      base64_encoded: false,
+      wait: false,
+    }));
 
-    const results = [];
+    // Submit all test cases in one batch
+    const submitResponse = await submitBatch(submissions);
+
+    const tokens = submitResponse.data.map((res) => res.token);
+
+    // Poll for results
+    const results = await pollBatchResults(tokens);
+
+    // Process results for each test case
+    const detailedResults = [];
     let allPassed = true;
 
-    // Loop through each test case
-    for (let i = 0; i < stdin.length; i++) {
-      const input = stdin[i];
+    results.forEach((result, i) => {
+      const stdout = result.stdout?.trim();
+      const expected_output = expected_outputs[i]?.trim();
+      const passed = stdout === expected_output;
 
-      const submitResponse = await axios.post(
-        `${process.env.JUDGE0_API_URL}/submissions`,
-        {
-          source_code: source_code, // Send modified code
-          language_id,
-          stdin: input, // Standard input
-          base64_encoded: false,
-          wait: false,
-        }
-      );
+      if (!passed) allPassed = false;
 
-      const token = submitResponse.data.token;
-      let result = null;
-      let attempts = 0;
-      const maxAttempts = 30;
-
-      // Poll for result
-      while (!result && attempts < maxAttempts) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const statusResponse = await axios.get(
-          `${process.env.JUDGE0_API_URL}/submissions/${token}`,
-          {
-            params: { base64_encoded: false },
-          }
-        );
-
-        const {
-          status,
-          stdout,
-          stderr,
-          compile_output,
-          memory,
-          time,
-        } = statusResponse.data;
-
-        if (status.id > 2) {
-          const expected_output = expected_outputs[i]?.trim();
-          const passed = stdout?.trim() === expected_output;
-
-          if (!passed) allPassed = false;
-
-          result = {
-            testCase: i + 1,
-            passed,
-            stdout: stdout || null,
-            expected: expected_output,
-            stderr: stderr || null,
-            compile_output: compile_output || null,
-            status: status.description,
-            memory: memory ? `${memory} KB` : undefined,
-            time: time ? `${time} s` : undefined,
-          };
-        }
-
-        attempts++;
-      }
-
-      if (!result) {
-        return res.status(500).json({ error: `Timeout on test case ${i + 1}` });
-      }
-
-      results.push(result);
-    }
+      detailedResults.push({
+        testCase: i + 1,
+        passed,
+        stdout: stdout || null,
+        expected: expected_output,
+        stderr: result.stderr || null,
+        compile_output: result.compile_output || null,
+        status: result.status.description,
+        memory: result.memory ? `${result.memory} KB` : undefined,
+        time: result.time ? `${result.time} s` : undefined,
+      });
+    });
 
     // Save submission to DB
     const submission = await db.submission.create({
@@ -98,14 +67,20 @@ export const executeCode = async (req, res) => {
         sourceCode: source_code,
         language: getLanguageName(language_id),
         stdin: stdin.join("\n"),
-        stdout: JSON.stringify(results.map((r) => r.stdout)),
-        stderr: results.some((r) => r.stderr) ? JSON.stringify(results.map((r) => r.stderr)) : null,
-        compileOutput: results.some((r) => r.compile_output)
-          ? JSON.stringify(results.map((r) => r.compile_output))
+        stdout: JSON.stringify(detailedResults.map((r) => r.stdout)),
+        stderr: detailedResults.some((r) => r.stderr)
+          ? JSON.stringify(detailedResults.map((r) => r.stderr))
+          : null,
+        compileOutput: detailedResults.some((r) => r.compile_output)
+          ? JSON.stringify(detailedResults.map((r) => r.compile_output))
           : null,
         status: allPassed ? "Accepted" : "Wrong Answer",
-        memory: results.some((r) => r.memory) ? JSON.stringify(results.map((r) => r.memory)) : null,
-        time: results.some((r) => r.time) ? JSON.stringify(results.map((r) => r.time)) : null,
+        memory: detailedResults.some((r) => r.memory)
+          ? JSON.stringify(detailedResults.map((r) => r.memory))
+          : null,
+        time: detailedResults.some((r) => r.time)
+          ? JSON.stringify(detailedResults.map((r) => r.time))
+          : null,
       },
     });
 
@@ -128,7 +103,7 @@ export const executeCode = async (req, res) => {
 
     // Store individual test case results
     await Promise.all(
-      results.map((result, index) =>
+      detailedResults.map((result, index) =>
         db.testCaseResult.create({
           data: {
             submissionId: submission.id,
@@ -166,13 +141,7 @@ export const executeCode = async (req, res) => {
 };
 
 // Map language ID to readable name
-function getLanguageName(languageId) {
-  const LANGUAGE_NAMES = {
-    74: "TypeScript",
-    63: "JavaScript",
-    71: "Python",
-    62: "Java",
-  };
-  return LANGUAGE_NAMES[languageId] || "Unknown";
-}
+
+
+// Poll batch results
 
