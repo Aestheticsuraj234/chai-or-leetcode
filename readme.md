@@ -1,3 +1,25 @@
+```bash
+npx prisma init
+```
+
+This will create a new `prisma/` folder with a `schema.prisma` file inside, and also add a `.env` file at the root of your project.
+
+If you haven't installed Prisma yet, first install it with:
+
+```bash
+npm install prisma --save-dev
+```
+
+And if you also want the Prisma Client to query your database:
+
+```bash
+npm install @prisma/client
+```
+
+
+docker run --name my-postgres -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
+
+
 # LeetCode Clone - Problem Solving Platform
 
 ---

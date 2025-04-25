@@ -1,7 +1,15 @@
 import { db } from '../libs/db.js';
-import axios from 'axios';
-import { getJudge0LanguageId, getJudge0Result } from '../libs/problem.libs.js';
 
+import { getJudge0LanguageId, getJudge0Result, pollBatchResults, submitBatch } from '../libs/problem.libs.js';
+
+
+
+
+
+
+
+
+// Final Create Problem Handler
 export const createProblem = async (req, res) => {
   const {
     title,
@@ -15,50 +23,56 @@ export const createProblem = async (req, res) => {
     referenceSolutions,
   } = req.body;
 
+  // Step 1: Check if the requesting user is an admin
   if (req.user.role !== 'ADMIN') {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
-    // Step 1: Validate each reference solution using testCases
+    // Step 2: Loop through each reference solution for different languages
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
+
+      // Step 2.1: Get Judge0 language ID for the current language
       const languageId = getJudge0LanguageId(language);
       if (!languageId) {
-        return res
-          .status(400)
-          .json({ error: `Unsupported language: ${language}` });
+        return res.status(400).json({ error: `Unsupported language: ${language}` });
       }
 
-      // Run all test cases individually
-      for (const testCase of testCases) {
-        const { input, output: expected_output } = testCase;
 
-        const submissionPayload = {
-          source_code: solutionCode,
-          language_id: languageId,
-          stdin: input,
-          expected_output: expected_output,
-        };
+      // Step 2.2: Prepare Judge0 submissions for all test cases
+      const submissions = testCases.map(({ input, output }) => ({
+        source_code: solutionCode,
+        language_id: languageId,
+        stdin: input,
+        expected_output: output,
+      }));
 
-        const submitResponse = await axios.post(
-          `${process.env.JUDGE0_API_URL}/submissions`,
-          submissionPayload
-        );
-        const token = submitResponse.data.token;
-        const result = await getJudge0Result(token);
+      console.log('Submissions:', submissions);
 
-        console.log(`Result for ${language} on input "${input}":`, result);
+      // TODO: CONVERT SUBMISSION TO CHUNKS OF 20
 
+      // Step 2.3: Submit all test cases in one batch
+      const submissionResults = await submitBatch(submissions);
+
+      // Step 2.4: Extract tokens from response
+      const tokens = submissionResults.map((res) => res.token);
+
+      // Step 2.5: Poll Judge0 until all submissions are done
+      const results = await pollBatchResults(tokens);
+
+      // Step 2.6: Validate that each test case passed (status.id === 3)
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
         if (result.status.id !== 3) {
           return res.status(400).json({
-            error: `Validation failed for ${language} on input: ${input}`,
+            error: `Validation failed for ${language} on input: ${submissions[i].stdin}`,
             details: result,
           });
         }
       }
     }
 
-    // Step 2: Save the problem to the database
+    // Step 3: Save the problem in the database after all validations pass
     const newProblem = await db.problem.create({
       data: {
         title,
@@ -74,6 +88,7 @@ export const createProblem = async (req, res) => {
       },
     });
 
+    // Step 4: Return success response with newly created problem
     res.status(201).json({
       success: true,
       message: 'Problem created successfully',
@@ -84,6 +99,8 @@ export const createProblem = async (req, res) => {
     res.status(500).json({ error: 'Failed to create problem' });
   }
 };
+
+
 
 export const getAllProblems = async (req, res) => {
   try {
@@ -148,6 +165,12 @@ export const updateProblem = async (req, res) => {
       return res.status(404).json({ error: 'Problem not found' });
     }
 
+
+    if(req.user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Forbidden: Only admin can update problems' });
+
+    }
+
     // Step 1: Validate each reference solution using testCases
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
@@ -157,37 +180,36 @@ export const updateProblem = async (req, res) => {
           .json({ error: `Unsupported language: ${language}` });
       }
 
-      // Run all test cases individually
-      for (const testCase of testCases) {
-        const { input, output: expected_output } = testCase;
+const submissions  = testCases.map(({ input, output }) => ({
+  source_code: solutionCode,
+  language_id: languageId,
+  stdin: input,
+  expected_output: output
+}))
+  
+        console.log('Submissions:', submissions);
 
-        const submissionPayload = {
-          source_code: solutionCode,
-          language_id: languageId,
-          stdin: input,
-          expected_output: expected_output,
-        };
+      // Step 2.3: Submit all test cases in one batch
+      const submissionResults = await submitBatch(submissions);
 
-        const submitResponse = await axios.post(
-          `${process.env.JUDGE0_API_URL}/submissions`,
-          submissionPayload
-        );
-        const token = submitResponse.data.token;
-        const result = await getJudge0Result(token);
+      // Step 2.4: Extract tokens from response
+      const tokens = submissionResults.map((res) => res.token);
 
-        console.log(`Result for ${language} on input "${input}":`, result);
+      const results = await pollBatchResults(tokens);
 
+      // Step 2.6: Validate that each test case passed (status.id === 3)
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
         if (result.status.id !== 3) {
           return res.status(400).json({
-            error: `Validation failed for ${language} on input: ${input}`,
+            error: `Validation failed for ${language} on input: ${submissions[i].stdin}`,
             details: result,
           });
         }
       }
     }
 
-    // Run all test cases individually
-    // Step 2: Save the updated problem to the database
+    // Step 3. Update the problem in the database
 
     const updatedProblem = await db.problem.update({
       where: { id },
