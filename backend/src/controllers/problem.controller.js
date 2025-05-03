@@ -1,13 +1,11 @@
 import { db } from '../libs/db.js';
 
-import { getJudge0LanguageId, getJudge0Result, pollBatchResults, submitBatch } from '../libs/problem.libs.js';
-
-
-
-
-
-
-
+import {
+  getJudge0LanguageId,
+  getJudge0Result,
+  pollBatchResults,
+  submitBatch,
+} from '../libs/problem.libs.js';
 
 // Final Create Problem Handler
 export const createProblem = async (req, res) => {
@@ -31,13 +29,13 @@ export const createProblem = async (req, res) => {
   try {
     // Step 2: Loop through each reference solution for different languages
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
-
       // Step 2.1: Get Judge0 language ID for the current language
       const languageId = getJudge0LanguageId(language);
       if (!languageId) {
-        return res.status(400).json({ error: `Unsupported language: ${language}` });
+        return res
+          .status(400)
+          .json({ error: `Unsupported language: ${language}` });
       }
-
 
       // Step 2.2: Prepare Judge0 submissions for all test cases
       const submissions = testCases.map(({ input, output }) => ({
@@ -100,19 +98,17 @@ export const createProblem = async (req, res) => {
   }
 };
 
-
-
 export const getAllProblems = async (req, res) => {
   try {
     // Get all the problem and also check that this is solved by current user or not
     const problems = await db.problem.findMany({
       include: {
-        solvedBy:{
+        solvedBy: {
           where: {
-            userId: req.user.id
-          }
-        }
-      }
+            userId: req.user.id,
+          },
+        },
+      },
     });
     res.status(200).json({
       success: true,
@@ -161,14 +157,15 @@ export const updateProblem = async (req, res) => {
     } = req.body;
 
     const problem = await db.problem.findUnique({ where: { id } });
+
     if (!problem) {
       return res.status(404).json({ error: 'Problem not found' });
     }
 
-
-    if(req.user.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Forbidden: Only admin can update problems' });
-
+    if (req.user.role !== 'ADMIN') {
+      return res
+        .status(403)
+        .json({ error: 'Forbidden: Only admin can update problems' });
     }
 
     // Step 1: Validate each reference solution using testCases
@@ -180,14 +177,14 @@ export const updateProblem = async (req, res) => {
           .json({ error: `Unsupported language: ${language}` });
       }
 
-const submissions  = testCases.map(({ input, output }) => ({
-  source_code: solutionCode,
-  language_id: languageId,
-  stdin: input,
-  expected_output: output
-}))
-  
-        console.log('Submissions:', submissions);
+      const submissions = testCases.map(({ input, output }) => ({
+        source_code: solutionCode,
+        language_id: languageId,
+        stdin: input,
+        expected_output: output,
+      }));
+
+      // console.log('Submissions:', submissions);
 
       // Step 2.3: Submit all test cases in one batch
       const submissionResults = await submitBatch(submissions);
@@ -258,7 +255,6 @@ export const deleteProblem = async (req, res) => {
   }
 };
 
-
 export const getAllProblemsSolvedByUser = async (req, res) => {
   try {
     const problems = await db.problem.findMany({
@@ -268,14 +264,14 @@ export const getAllProblemsSolvedByUser = async (req, res) => {
             userId: req.user.id,
           },
         },
-      },    
+      },
       include: {
         solvedBy: {
           where: {
-            userId: req.user.id
-          }
-        }
-      }
+            userId: req.user.id,
+          },
+        },
+      },
     });
     res.status(200).json({
       success: true,

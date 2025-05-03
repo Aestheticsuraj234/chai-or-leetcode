@@ -20,7 +20,8 @@ https://organic-citipati-da4.notion.site/Judge0-installation-1dae8b262f268039959
 
 3. **Complete Ubuntu Setup**  
    - Open the **Ubuntu terminal** from the Start menu.
-   - Follow the prompts to **create a UNIX username and password**.
+   - Follow the promp
+   ts to **create a UNIX username and password**.
 
 4. **Update Ubuntu**  
    - Once Ubuntu is set up, run the following commands to update all packages:
